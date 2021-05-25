@@ -13,54 +13,38 @@ def print_hi(name):
 
 def convert_csv():
     newRows = []
+    totalRows = []
     with open('input.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
+        flip = False
+        item_array = []
+        total_array = []
+
         for row in csv_reader:
-            # if line_count == 0:
-            #     # Column Names
-            #     print(f'Column names are {", ".join(row)}')
-            #     #write first line to new file
-            #     line_count += 1
 
-            name = ''
-            date = ''
-            price = ''
-            if line_count == 0:
-                date = row[0]
-                price = row[2]
-            if line_count == 1:
-                name = row[1]
-            if line_count == 2:
-                date = row[0]
-                price = row[2]
+            if not flip:
+                print('Date ' + row[0])
+                print('Price ' + row[3])
+                flip = not flip
+                item_array.insert(len(item_array), row[0])
+                item_array.insert(len(item_array), ',')
+                item_array.insert(len(item_array), row[3])
+            elif flip:
+                print('Name ' + row[1])
+                item_array.insert(len(item_array), ',')
+                item_array.insert(len(item_array), row[1])
+                item_array.insert(len(item_array), ',')
 
-            if line_count >= 3:
-                if line_count % 2 != 1:
-                    # Rows on index 1 line
-                    # print(f'\t{row[0]} works in the {row[1]} department, and was born in {row[2]}.')
-                    # Write specific rows[1] + "," in the correct order
-                    date = row[0]
-                    price = row[2]
-                    # 1=date,3=price
-                if line_count % 2 == 1:
-                    name = row[1]
-                    # 2=itemname
-            if date != '':
-                newRows.insert(0, date)
-
-            if name != '':
-                newRows.insert(0, name)
-            if price != '':
-                newRows.insert(0, price)
+                total_array.insert(0, item_array.copy())
+                item_array.clear()
+                flip = not flip
 
             line_count += 1
-            print("Row: " + newRows.__str__())
 
-
-        with open('eggs.csv', 'w', newline='') as csvfile:
-            spamwriter = csv.writer(csvfile, delimiter=' ')
-            spamwriter.writerows(newRows)
+        with open('eggs.csv', 'w', newline='') as newFile:
+            spamwriter = csv.writer(newFile, delimiter=' ')
+            spamwriter.writerows(total_array)
 
         print(f'Processed {line_count} lines.')
 
